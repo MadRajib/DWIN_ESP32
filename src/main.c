@@ -1,4 +1,4 @@
-#include "dwin.h"
+#include "dwin_lcd.h"
 #include "esp_log.h"
 
 static const char* TAG = "ESP";
