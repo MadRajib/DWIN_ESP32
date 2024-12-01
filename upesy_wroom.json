@@ -10,7 +10,11 @@
         "-DCYD_SCREEN_FONT_SMALL=lv_font_montserrat_12",
         "-DCYD_SCREEN_SIDEBAR_SIZE_PX=50",
         "-DCYD_SCREEN_DRIVER_ESP32_3248S035C=1",
-        "-DCYD_SCREEN_DISABLE_TOUCH_CALIBRATION=1"
+        "-DCYD_SCREEN_DISABLE_TOUCH_CALIBRATION=1",
+        "-DHAS_HOTEND=1",
+        "-DHAS_HEATED_BED=1",
+        "-DHAS_FAN=1",
+        "-DHAS_ZOFFSET_ITEM=1"
       ]
     }
   }

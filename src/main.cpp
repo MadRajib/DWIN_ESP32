@@ -29,10 +29,4 @@ void loop(){
     data_loop();
     lv_handler();
     serial_console::run();
-
-    // if (is_ready_for_ota_update())
-    // {
-    //     ota_do_update();
-    // }
-
 }

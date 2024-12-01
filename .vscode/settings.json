@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "esp_log.h": "c",
-        "cstddef": "cpp"
+        "cstddef": "cpp",
+        "*.tcc": "cpp",
+        "sstream": "cpp"
     }
 }

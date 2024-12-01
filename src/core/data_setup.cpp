@@ -17,6 +17,14 @@ SemaphoreHandle_t freezeRenderThreadSemaphore, freezeRequestThreadSemaphore;
 const long data_update_interval = 780;
 unsigned char lock_absolute_relative_mode_swap = 0;
 
+#include "../device/dwin.h"
+
+void update_lcd_status()
+{
+    // Draw_Status_Area(true);
+    Draw_Status_Area_text();
+}
+
 void semaphore_init(){
     freezeRenderThreadSemaphore = xSemaphoreCreateMutex();
     freezeRequestThreadSemaphore = xSemaphoreCreateMutex();
@@ -147,14 +155,14 @@ void fetch_printer_data()
         JsonDocument doc;
         deserializeJson(doc, client.getStream());
 
-        // if (doc.is<JsonObject>()) {
-        //         JsonObject obj = doc.as<JsonObject>();
-        //         for (JsonPair kv : obj) {
-        //             Serial.print(kv.key().c_str());
-        //             Serial.print(": ");
-        //             Serial.println(kv.value().as<String>());
-        //         }
-        // }
+        if (doc.is<JsonObject>()) {
+                JsonObject obj = doc.as<JsonObject>();
+                for (JsonPair kv : obj) {
+                    Serial.print(kv.key().c_str());
+                    Serial.print(": ");
+                    Serial.println(kv.value().as<String>());
+                }
+        }
 
         auto status = doc["result"]["status"];
         bool emit_state_update = false;
@@ -325,7 +333,7 @@ void fetch_printer_data()
                 printer.slicer_estimated_print_time_s = 0;
             }
 
-           // lv_msg_send(DATA_PRINTER_DATA, &printer);
+        //    lv_msg_send(DATA_PRINTER_DATA, &printer);
         }
 
         if (printer.state != printer_state || emit_state_update)
@@ -342,6 +350,7 @@ void fetch_printer_data()
         }
 
         unfreeze_render_thread();
+        update_lcd_status();
     }
     else
     {
@@ -447,6 +456,8 @@ void fetch_printer_data_minimal()
                     }
                 }
             }
+
+            
         }
         else 
         {
@@ -460,6 +471,8 @@ void fetch_printer_data_minimal()
     memcpy(printer_minimal, data, sizeof(PrinterMinimal) * PRINTER_CONFIG_COUNT);
    // lv_msg_send(DATA_PRINTER_MINIMAL, NULL);
     unfreeze_render_thread();
+    update_lcd_status();
+    
 }
 
 void data_loop()
