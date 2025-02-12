@@ -3,6 +3,7 @@
         "esp_log.h": "c",
         "cstddef": "cpp",
         "*.tcc": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "cmath": "cpp"
     }
 }

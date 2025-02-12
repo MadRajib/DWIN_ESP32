@@ -14,7 +14,11 @@
         "-DHAS_HOTEND=1",
         "-DHAS_HEATED_BED=1",
         "-DHAS_FAN=1",
-        "-DHAS_ZOFFSET_ITEM=1"
+        "-DHAS_ZOFFSET_ITEM=1",
+        "-DBTN_ENC=14",
+        "-DBTN_EN1=15",
+        "-DBTN_EN2=12",
+        "-DBEEPER_PIN=13"
       ]
     }
   }

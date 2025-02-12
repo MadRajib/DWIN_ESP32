@@ -16,6 +16,8 @@ const char MSG_BUTTON_PRINT[] PROGMEM = "Print";
 const char MSG_PREPARE[] PROGMEM = "Prepare";
 const char MSG_CONTROL[] PROGMEM = "Control";
 const char MSG_INFO_SCREEN[] PROGMEM ="Info Screen";
+const char MSG_LEVEL_BED[] PROGMEM ="Level Bed";
 
-const char RANGE_FORMAT[] PROGMEM  = "%03d /%03d";
+const char RANGE_FORMAT[] PROGMEM  = "%3d/%3d";
+const char PERCENT_FORMAT[] PROGMEM  = "%3d %%";
 
