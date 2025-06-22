@@ -48,8 +48,8 @@ bool Dwin_Lcd::handshake(void)
   while (!LCD_SERIAL_PORT.available() && PENDING(millis(), serial_connect_timeout)) { /*nada*/ }
   delay(10);
 
-  this->add_byte(0x00);
-  this->send();
+  add_byte(0x00);
+  send();
 
   delay(20);
 
@@ -91,6 +91,8 @@ void Dwin_Lcd::screen_setup(void) {
 
     hmi_init();
     draw_main_frame();
+    draw_status_frame();
+    update_status();
 }
 
 /* Set display rotation */
@@ -224,7 +226,7 @@ void Dwin_Lcd::hmi_init() {
 
 void Dwin_Lcd::update_status(void)
 {
-  uint16_t col = 360;
+  uint16_t col = 340;
   draw_string(false, true, DWIN_FONT_STAT, Color_White, Color_Bg_Black, col + 40,
     50 , SPRINTF_FROM_PROGMEM(str_buffer, formatBuffer, RANGE_FORMAT, 999, 999));
 
@@ -232,20 +234,29 @@ void Dwin_Lcd::update_status(void)
     80, SPRINTF_FROM_PROGMEM(str_buffer, formatBuffer, RANGE_FORMAT, 0, 999));
 
   draw_string(false, true, DWIN_FONT_STAT, Color_White, Color_Bg_Black, col + 40,
-    110, SPRINTF_FROM_PROGMEM(str_buffer, formatBuffer, PERCENT_FORMAT, 999));
+    115, SPRINTF_FROM_PROGMEM(str_buffer, formatBuffer, PERCENT_FORMAT, 999));
 
   draw_string(false, true, DWIN_FONT_STAT, Color_White, Color_Bg_Black, col + 40,
-    140, SPRINTF_FROM_PROGMEM(str_buffer, formatBuffer, PERCENT_FORMAT, 999));
+    145, SPRINTF_FROM_PROGMEM(str_buffer, formatBuffer, PERCENT_FORMAT, 999));
 
-  draw_int(true, true, 0, DWIN_FONT_STAT, Color_White, Color_Bg_Black, 3, col + 5, 250,  999);
-  draw_int(true, true, 0, DWIN_FONT_STAT, Color_White, Color_Bg_Black, 3, col + 45, 250,  999);
-  draw_int(true, true, 0, DWIN_FONT_STAT, Color_White, Color_Bg_Black, 3, col + 85, 250,  999);
+  // draw_int(true, true, 0, DWIN_FONT_STAT, Color_White, Color_Bg_Black, 3, col + 40 , 170,  999);
+  // draw_int(true, true, 0, DWIN_FONT_STAT, Color_White, Color_Bg_Black, 3, col + 40,  200,  999);
+  // draw_int(true, true, 0, DWIN_FONT_STAT, Color_White, Color_Bg_Black, 3, col + 40 , 230,  999);
+
+  draw_int(true, true, 0, DWIN_FONT_STAT, Color_White, Color_Bg_Black, 3, col + 20 , 175,  999);
+  draw_int(true, true, 0, DWIN_FONT_STAT, Color_White, Color_Bg_Black, 3, col + 90,  175,  999);
+  draw_int(true, true, 0, DWIN_FONT_STAT, Color_White, Color_Bg_Black, 3, col + 20 , 205,  999);
+
+  draw_string(false, true, DWIN_FONT_STAT, Color_White, Color_Bg_Black, col + 40,
+    240, SPRINTF_FROM_PROGMEM(str_buffer, formatBuffer, TIME_FORMAT, 10, 12));
+
 
   update_lcd();
 }
 
 void Dwin_Lcd::draw_status_frame() {
-  uint16_t col = 360;
+  uint16_t col = 310;
+  uint16_t icon_off = col + 20;
 
   add_rect(1, Color_Bg_Orange, col, 0, DWIN_WIDTH - 1, 30);
   draw_string(false, false, DWIN_FONT_HEAD, Color_White, Color_Bg_Orange, col + 20, 4, GET_TEXT_F(str_buffer, MSG_STATUS));
@@ -253,17 +264,19 @@ void Dwin_Lcd::draw_status_frame() {
   add_rect(1, Color_Bg_Black, col,  31, DWIN_WIDTH, DWIN_HEIGHT - 1);
 
   /* Hot end */
-  add_icon(ICON, ICON_HotendTemp, col, 50);
+  add_icon(ICON, ICON_HotendTemp, icon_off, 50);
 
   /* Heat bed */
-  add_icon(ICON, ICON_BedTemp, col, 80);
+  add_icon(ICON, ICON_BedTemp, icon_off, 80);
 
-  add_icon(ICON, ICON_Speed, col, 110);
-  add_icon(ICON, ICON_FanSpeed, col, 140);
+  add_icon(ICON, ICON_Speed, icon_off, 115);
+  add_icon(ICON, ICON_FanSpeed, icon_off, 145);
 
-  add_icon(ICON, ICON_MaxSpeedX,  col + 10, 230);
-  add_icon(ICON, ICON_MaxSpeedY,  col + 50, 230);
-  add_icon(ICON, ICON_MaxSpeedZ,  col + 90, 230);
+  add_icon(ICON, ICON_StepX,  icon_off, 175);
+  add_icon(ICON, ICON_StepY,  icon_off + 70, 175);
+  add_icon(ICON, ICON_StepZ,  icon_off, 205);
+
+  add_icon(ICON, ICON_PrintTime,  icon_off, 240);
 
   update_lcd();
 }
@@ -282,20 +295,20 @@ void Dwin_Lcd::draw_main_frame() {
 
   draw_string(false, false, DWIN_FONT_HEAD, Color_White, Color_Bg_Green, 14, 4, GET_TEXT_F(str_buffer, MSG_MAIN));
 
-  add_icon(ICON, ICON_Print_0, 6, 40);
-  draw_string(false, false, DWIN_FONT_MENU, Color_White, Color_Bg_Blue, 41, 108, GET_TEXT_F(str_buffer, MSG_BUTTON_PRINT));
+  add_icon(ICON, ICON_Print_0, 30, 40);
+  draw_string(false, false, DWIN_FONT_MENU, Color_White, Color_Bg_Blue, 65, 108, GET_TEXT_F(str_buffer, MSG_BUTTON_PRINT));
 
-  add_icon(ICON, ICON_Prepare_0, 126, 40);
-  draw_string(false, false, DWIN_FONT_MENU, Color_White, Color_Bg_Blue, 156, 108, GET_TEXT_F(str_buffer, MSG_PREPARE));
+  add_icon(ICON, ICON_Prepare_0, 166, 40);
+  draw_string(false, false, DWIN_FONT_MENU, Color_White, Color_Bg_Blue, 196, 108, GET_TEXT_F(str_buffer, MSG_PREPARE));
 
   // add_icon(ICON, ICON_Leveling_0, 246, 40);
   // draw_string(false, false, DWIN_FONT_MENU, Color_White, Color_Bg_Blue, 276, 108, GET_TEXT_F(str_buffer, MSG_PREPARE));
 
-  add_icon(ICON, ICON_Control_0, 6, 160);
-  draw_string(false, false, DWIN_FONT_MENU, Color_White, Color_Bg_Blue, 36, 230, GET_TEXT_F(str_buffer, MSG_CONTROL));
+  add_icon(ICON, ICON_Control_0, 30, 160);
+  draw_string(false, false, DWIN_FONT_MENU, Color_White, Color_Bg_Blue, 60, 230, GET_TEXT_F(str_buffer, MSG_CONTROL));
 
-  add_icon(ICON, ICON_Info_0, 126, 160);
-  draw_string(false, false, DWIN_FONT_MENU, Color_White, Color_Bg_Blue, 138, 230, GET_TEXT_F(str_buffer, MSG_LEVEL_BED));
+  add_icon(ICON, ICON_Info_0, 166, 160);
+  draw_string(false, false, DWIN_FONT_MENU, Color_White, Color_Bg_Blue, 185, 230, GET_TEXT_F(str_buffer, MSG_LEVEL_BED));
 
   // add_icon(ICON, ICON_Prepare_0, 246, 160);
   // draw_string(false, false, DWIN_FONT_MENU, Color_White, Color_Bg_Blue, 276, 230, GET_TEXT_F(str_buffer, MSG_PREPARE));

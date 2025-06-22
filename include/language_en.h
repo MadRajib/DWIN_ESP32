@@ -20,4 +20,5 @@ const char MSG_LEVEL_BED[] PROGMEM ="Level Bed";
 
 const char RANGE_FORMAT[] PROGMEM  = "%3d/%3d";
 const char PERCENT_FORMAT[] PROGMEM  = "%3d %%";
+const char TIME_FORMAT[] PROGMEM  = "%2d:%2d";
 

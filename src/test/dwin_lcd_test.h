@@ -19,7 +19,6 @@
 
 #define _MIN(l, r) ((l < r)? l: r)
 
-
 // ICON ID
 #define ICON                      0x09
 #define ICON_LOGO                  0
