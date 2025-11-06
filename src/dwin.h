@@ -5,12 +5,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
-int DWIN_init(void);
+int dwin_init(void);
+bool dwin_handshake(void);
+void dwin_send(void);
+void dwin_add_byte(uint8_t bval);
+void dwin_add_word(uint16_t bval);
+void dwin_add_long(uint32_t lval);
+void dwin_add_string(char * const string);
 
-bool DWIN_Handshake(void);
-
-void DWIN_Send(size_t *i);
-
-void DWIN_Byte(size_t *i, const uint16_t bval);
+void dwin_update_lcd(void);
+void dwin_write_big_endian_int64(uint16_t value);
 
 #endif
