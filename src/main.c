@@ -25,19 +25,26 @@ void nvs_init() {
 
 void app_main()
 {
+  bool printer_connected = false;
   nvs_init();
   wifi_connect(0, NULL);
 
-  printer_connect();
-
   screen_init();
   screen_setup();
-
   command_init();
+
+
+  EventGroupHandle_t wifi_group = wifi_get_event_group();
 
   while (1) {
     commmand_run();
     vTaskDelay(pdMS_TO_TICKS(10));
-  }
+
+    EventBits_t bits = xEventGroupGetBits(wifi_group);
+    if ((bits & BIT0) && !printer_connected) {
+            printer_connect();
+            printer_connected = true;
+      }
+    }
 
 }

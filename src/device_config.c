@@ -193,13 +193,13 @@ void conf_save()
 bool is_device_conf_set(enum CONF type) {
     switch (type) {
         case CONF_SSID:
-            return g_config.ssid[0] == '\0';
+            return g_config.ssid[0] != '\0';
         case CONF_PASS:
-            return g_config.pass[0] == '\0';
+            return g_config.pass[0] != '\0';
         case CONF_PRINTER_IP:
-            return g_config.printer_ip[0] == '\0';
+            return g_config.printer_ip[0] != '\0';
         case CONF_PRINTER_PORT:
-            return g_config.printer_port[0] == '\0';
+            return g_config.printer_port[0] != '\0';
         default:
             return false;
     }
