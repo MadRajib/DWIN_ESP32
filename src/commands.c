@@ -8,17 +8,23 @@ int show_info(int argc, char **argv)
 {
   char tmp[65] = {0};
 
-  printf("ESP Moon configs:\n");
+  printf("Device configs:\n");
 
   if (!conf_get(CONF_SSID, tmp))
     printf("SSID: %s\n", tmp);
+  
+  if (!conf_get(CONF_PRINTER_IP, tmp))
+    printf("printer_ip: %s:", tmp);
+  
+  if (!conf_get(CONF_PRINTER_PORT, tmp))
+    printf("%s\n:", tmp);
 
   return 0;
 }
 
 int wifi_connect(int argc, char **argv)
 {
-  if(conf_is_wifi_set()) {
+  if (!is_device_conf_set(CONF_PASS) || !is_device_conf_set(CONF_SSID)) {
     printf("WIFI config not set!\n");
     return -1;
   }
@@ -57,7 +63,7 @@ int set_pass(int argc, char **argv)
 int erase(int argc, char **argv)
 {
   if (argc < 2) {
-    printf("erase ssid/pass/all\n");
+    printf("erase ssid/pass/printer_ip/all\n");
     return -1;
   }
 
@@ -67,6 +73,9 @@ int erase(int argc, char **argv)
     conf_erase(CONF_SSID);
   } else if (!strcmp(argv[1], "pass")) {
     conf_erase(CONF_PASS);
+  } else if (!strcmp(argv[1], "printer_ip")) {
+    conf_erase(CONF_PRINTER_IP);
+    conf_erase(CONF_PRINTER_PORT);
   } else {
     printf("not present!\n");
     return -1;
@@ -87,8 +96,25 @@ int save_config(int argc, char **argv)
   return 0;
 }
 
+int setup_printer_config(int argc, char **argv)
+{
+ if (argc < 3 || argc > 3 ) {
+    printf("set_printer <ip> <port> \n");
+    return -1;
+  }
+
+  if (conf_set(CONF_PRINTER_IP, argv[1]))
+    printf("error while setting printer conf!\n");
+
+  if (conf_set(CONF_PRINTER_PORT, argv[2]))
+    printf("error while setting printer port!\n");
+
+  return 0;
+}
+
 COMMANDS(
-    {"info", "show printer info:    -> info", show_info},
+    {"info", "show all info:    -> info", show_info},
+    {"set_printer", "set_printer:   -> set_printer <ip> <port>", setup_printer_config},
     {"set_ssid", "set ssid:         -> set_ssid <ssid>", set_ssid},
     {"set_pass", "set pass:         -> set_pass <pass>", set_pass},
     {"erase", "erase config:        -> erase ssid/pass/all", erase},

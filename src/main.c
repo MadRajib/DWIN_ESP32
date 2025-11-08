@@ -7,6 +7,7 @@
 #include "dwin_lcd.h"
 #include "wifi_config.h"
 #include "device_config.h"
+#include "net.h"
 #include "commands.h"
 
 void nvs_init() {
@@ -26,6 +27,8 @@ void app_main()
 {
   nvs_init();
   wifi_connect(0, NULL);
+
+  printer_connect();
 
   screen_init();
   screen_setup();
