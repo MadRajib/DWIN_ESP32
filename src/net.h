@@ -1,6 +1,7 @@
 #ifndef _NET_H
 #define _NET_H
+#include <stdbool.h>
 
-void printer_connect(void);
+bool printer_connect(void);
 
 #endif

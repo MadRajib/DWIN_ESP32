@@ -33,7 +33,6 @@ void app_main()
   screen_setup();
   command_init();
 
-
   EventGroupHandle_t wifi_group = wifi_get_event_group();
 
   while (1) {
@@ -42,9 +41,10 @@ void app_main()
 
     EventBits_t bits = xEventGroupGetBits(wifi_group);
     if ((bits & BIT0) && !printer_connected) {
-            printer_connect();
-            printer_connected = true;
-      }
+            printer_connected = printer_connect();
     }
-
+    
+    /* Get data from printer */
+    printer_update();
+  }
 }
