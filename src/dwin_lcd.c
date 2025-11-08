@@ -13,6 +13,14 @@
 char str_buffer[20];
 char formatBuffer[20];
 
+void screen_init() {
+  dwin_init();
+  if (dwin_handshake()) 
+    printf("Connection Successfull\n");
+  else
+    printf("Connection timeout!\n");
+}
+
 void screen_setup(void) {
     screen_set_display_rot(0);
 

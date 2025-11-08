@@ -170,3 +170,4 @@ void screen_draw_status_frame(void);
 void screen_draw_main_frame(void);
 void screen_draw_print_icon(void);
 void screen_setup(void);
+void screen_init(void);
