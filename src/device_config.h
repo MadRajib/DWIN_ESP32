@@ -1,7 +1,7 @@
 #ifndef __DEVICE_CONFIG_H
 #define __DEVICE_CONFIG_H
 
-#include "utils.h"
+#include "utils/utils.h"
 #include <stdbool.h>
 
 enum CONF {

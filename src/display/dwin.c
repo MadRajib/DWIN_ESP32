@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "rom/ets_sys.h"
-#include "utils.h"
+#include "utils/utils.h"
 #include "dwin.h"
 
 /* DISPLAY size */

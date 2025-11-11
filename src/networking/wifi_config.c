@@ -19,7 +19,7 @@ static void sta_event_handler(void *arg, esp_event_base_t event_base,
 {
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START)
     {
-        LOGF("trying to connect\n");
+        printf("trying to connect\n");
         esp_wifi_connect();
     }
     else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
@@ -29,16 +29,16 @@ static void sta_event_handler(void *arg, esp_event_base_t event_base,
         {
             esp_wifi_connect();
             s_retry_num++;
-            LOGF("retry to connect to the AP\n");
+            printf("retry to connect to the AP\n");
         }
 
-        LOGF("connect to the AP fail\n");
+        printf("connect to the AP fail\n");
         xEventGroupClearBits(wifi_event_group, WIFI_CONNECTED_BIT);
     }
     else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
     {
         ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
-        LOGF("got ip:" IPSTR "\n", IP2STR(&event->ip_info.ip));
+        printf("got ip:" IPSTR "\n", IP2STR(&event->ip_info.ip));
 
         s_retry_num = 0;
         is_sta_connected = true;

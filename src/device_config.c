@@ -1,4 +1,4 @@
-#include "string.h"
+#include <string.h>
 #include "nvs_flash.h"
 #include "nvs.h"
 
@@ -26,30 +26,30 @@ static void read_string_from_nvs()
 
     esp_err_t ret = nvs_open("storage", NVS_READONLY, &handle);
     if (ret != ESP_OK) {
-        LOGF("Error opening NVS (%s)\n", esp_err_to_name(ret));
+        printf("Error opening NVS (%s)\n", esp_err_to_name(ret));
         return;
     }
 
     ret = nvs_get_str(handle, "ssid", g_config.ssid, &length);
     if (ret != ESP_OK) {
-        LOGF("Error reading string: %s\n", esp_err_to_name(ret));
+        printf("Error reading string: %s\n", esp_err_to_name(ret));
         goto close;  
     }
 
     length = WIFI_PASS_LEN;
     ret = nvs_get_str(handle, "pass", g_config.pass, &length);
     if (ret != ESP_OK)
-        LOGF("Error reading string: %s\n", esp_err_to_name(ret));
+        printf("Error reading string: %s\n", esp_err_to_name(ret));
 
     length = PRINTER_IP_LEN;
     ret = nvs_get_str(handle, "p_ip", g_config.printer_ip, &length);
     if (ret != ESP_OK)
-        LOGF("Error reading string: %s\n", esp_err_to_name(ret));
+        printf("Error reading string: %s\n", esp_err_to_name(ret));
     
     length = PRINTER_PORT_LEN;
     ret = nvs_get_str(handle, "p_port", g_config.printer_port, &length);
     if (ret != ESP_OK)
-        LOGF("Error reading string: %s\n", esp_err_to_name(ret));
+        printf("Error reading string: %s\n", esp_err_to_name(ret));
 close:
     nvs_close(handle);
 }
@@ -66,7 +66,7 @@ static void write_string_to_nvs()
     nvs_handle_t handle;
     ret = nvs_open("storage", NVS_READWRITE, &handle);
     if (ret != ESP_OK) {
-        LOGF("Error opening NVS (%s)\n", esp_err_to_name(ret));
+        printf("Error opening NVS (%s)\n", esp_err_to_name(ret));
         return;
     }
 
@@ -74,28 +74,28 @@ static void write_string_to_nvs()
         // Write string
         ret = nvs_set_str(handle, "ssid", g_config.ssid);
         if (ret != ESP_OK) {
-            LOGF("Error setting string (%s)\n", esp_err_to_name(ret));
+            printf("Error setting string (%s)\n", esp_err_to_name(ret));
         }
     }
     
     if (g_config.modified & (1 << CONF_PASS)) {
         ret = nvs_set_str(handle, "pass", g_config.pass);
         if (ret != ESP_OK) {
-            LOGF("Error setting string (%s)\n", esp_err_to_name(ret));
+            printf("Error setting string (%s)\n", esp_err_to_name(ret));
         }
     }
 
     if (g_config.modified & (1 << CONF_PRINTER_IP)) {
         ret = nvs_set_str(handle, "p_ip", g_config.printer_ip);
         if (ret != ESP_OK) {
-            LOGF("Error setting string (%s)\n", esp_err_to_name(ret));
+            printf("Error setting string (%s)\n", esp_err_to_name(ret));
         }
     }
 
     if (g_config.modified & (1 << CONF_PRINTER_PORT)) {
         ret = nvs_set_str(handle, "p_port", g_config.printer_port);
         if (ret != ESP_OK) {
-            LOGF("Error setting string (%s)\n", esp_err_to_name(ret));
+            printf("Error setting string (%s)\n", esp_err_to_name(ret));
         }
     }
 

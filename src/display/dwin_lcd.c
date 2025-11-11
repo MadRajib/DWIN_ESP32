@@ -1,9 +1,8 @@
 #include "dwin_lcd.h"
 #include <string.h>
 #include <stdio.h>
-#include "language_en.h"
+#include "utils/language_en.h"
 #include "dwin.h"
-
 
 #define SPRINTF(buffer, format_buffer, ...) ({ \
     sprintf((buffer), (format_buffer), __VA_ARGS__);                    \

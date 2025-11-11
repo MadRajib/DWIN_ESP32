@@ -4,7 +4,8 @@
 #define FOR_L_N(itr, N) for (size_t itr=0; itr < N; ++itr)
 #define FOR_LE_N(itr, N) for (size_t itr=0; itr <= N; ++itr)
 
-#include <stdarg.h>
+#ifndef BIT
+#define BIT(x) (1U << (x))
+#endif
 
-void LOGF(const char *format, ...);
 #endif

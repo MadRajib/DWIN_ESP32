@@ -4,11 +4,11 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "nvs.h"
-#include "dwin_lcd.h"
-#include "wifi_config.h"
+#include "display/dwin_lcd.h"
+#include "networking/wifi_config.h"
 #include "device_config.h"
-#include "net.h"
 #include "commands.h"
+#include "printer_base.h"
 
 void nvs_init() {
   esp_err_t err = nvs_flash_init();
@@ -28,6 +28,9 @@ void app_main()
   bool printer_connected = false;
   nvs_init();
   wifi_connect(0, NULL);
+  if (!printer_init()) {
+    printf("failed to initize the printer\n");
+  }
 
   screen_init();
   screen_setup();
@@ -45,6 +48,8 @@ void app_main()
     }
     
     /* Get data from printer */
-    printer_update();
+    if (printer_connected)
+      printer_update();
+    
   }
 }

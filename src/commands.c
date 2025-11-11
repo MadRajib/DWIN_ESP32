@@ -1,5 +1,5 @@
 #include "esp_system.h"
-#include "wifi_config.h"
+#include "networking/wifi_config.h"
 #include "device_config.h"
 #include "serial_prompt.h"
 
