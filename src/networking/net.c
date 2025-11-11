@@ -36,8 +36,6 @@ bool net_req_http(char *url, void (*parser)(char *buf, size_t len)) {
     esp_http_client_set_url(client, url);
     esp_http_client_set_method(client, HTTP_METHOD_GET);
 
-    printf("url: %s", url);
-
     err = esp_http_client_open(client, 0);
     if (err == ESP_OK) {
         content_length = esp_http_client_fetch_headers(client);

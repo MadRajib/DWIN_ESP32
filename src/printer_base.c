@@ -5,8 +5,10 @@
 #include "device_config.h"
 
 printer_ops_t *printer_ops = NULL;
-
 static bool printer_initialized = false;
+
+extern SemaphoreHandle_t wifi_connected_sem;
+extern bool wifi_connected;
 
 bool printer_init(void)
 {
@@ -47,7 +49,8 @@ bool printer_connect(void) {
     return printer_ops->connection_test();
 }
 
-void printer_update(void) {
+static void printer_update(void) {
+
     if (printer_ops->get_printer_state() == STATE_OFFLINE) {
         if (!printer_connect()) {
             printf("failed to connect to printer\n");
@@ -58,3 +61,23 @@ void printer_update(void) {
     printer_ops->fetch();
 }
 
+void priter_fetch_task(void *params) {
+
+    (void)params;
+    const TickType_t xDelay = 1000 / portTICK_PERIOD_MS;
+    for (;;) {
+        /* Wait for wifi connection */
+        if (xSemaphoreTake(wifi_connected_sem, portMAX_DELAY) == pdTRUE) {
+            /* fetch */
+            while (1) {
+                if (wifi_connected) {
+                    printer_update();
+                    vTaskDelay(xDelay);
+                } else {
+                    break;
+                }
+            }
+        }
+        
+    }
+}

@@ -8,9 +8,8 @@
 
 static int s_retry_num = 0;
 bool is_sta_connected = false;
-
-static EventGroupHandle_t wifi_event_group;
-#define WIFI_CONNECTED_BIT BIT0
+extern SemaphoreHandle_t wifi_connected_sem;
+extern bool wifi_connected;
 
 /* Wifi handles*/
 // STA event handler
@@ -33,7 +32,9 @@ static void sta_event_handler(void *arg, esp_event_base_t event_base,
         }
 
         printf("connect to the AP fail\n");
-        xEventGroupClearBits(wifi_event_group, WIFI_CONNECTED_BIT);
+        // xEventGroupClearBits(wifi_event_group, WIFI_CONNECTED_BIT);
+        printf("taking semaphore\n");
+        wifi_connected = false;
     }
     else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
     {
@@ -42,7 +43,9 @@ static void sta_event_handler(void *arg, esp_event_base_t event_base,
 
         s_retry_num = 0;
         is_sta_connected = true;
-        xEventGroupSetBits(wifi_event_group, WIFI_CONNECTED_BIT);
+        // xEventGroupSetBits(wifi_event_group, WIFI_CONNECTED_BIT);
+        wifi_connected = true;
+        xSemaphoreGive(wifi_connected_sem);
     }
 }
 
@@ -51,10 +54,7 @@ void wifi_init(const int mode)
 
     wifi_config_t wifi_config;
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    esp_netif_t *sta;
     char tmp[65] = {0};
-
-    wifi_event_group = xEventGroupCreate();
     
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
@@ -92,9 +92,4 @@ void wifi_init(const int mode)
     
     ESP_ERROR_CHECK(esp_wifi_start());
     esp_wifi_set_ps(WIFI_PS_MIN_MODEM);
-}
-
-EventGroupHandle_t wifi_get_event_group(void)
-{
-    return wifi_event_group;
 }

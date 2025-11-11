@@ -7,6 +7,5 @@
 enum { WIFI_AP, WIFI_STA };
 
 void wifi_init(const int);
-EventGroupHandle_t wifi_get_event_group(void);
 
 #endif

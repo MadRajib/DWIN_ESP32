@@ -5,10 +5,16 @@
 #include "freertos/task.h"
 #include "nvs.h"
 #include "display/dwin_lcd.h"
+#include "common.h"
 #include "networking/wifi_config.h"
 #include "device_config.h"
 #include "commands.h"
 #include "printer_base.h"
+
+TaskHandle_t fetch_task;
+
+SemaphoreHandle_t wifi_connected_sem = NULL;
+bool wifi_connected = false;
 
 void nvs_init() {
   esp_err_t err = nvs_flash_init();
@@ -25,7 +31,6 @@ void nvs_init() {
 
 void app_main()
 {
-  bool printer_connected = false;
   nvs_init();
   wifi_connect(0, NULL);
   if (!printer_init()) {
@@ -36,20 +41,21 @@ void app_main()
   screen_setup();
   command_init();
 
-  EventGroupHandle_t wifi_group = wifi_get_event_group();
+  wifi_connected_sem = xSemaphoreCreateBinary();
+
+  xTaskCreatePinnedToCore(
+    priter_fetch_task,            /* Task function. */
+    "Fetch Tasks",                 /* name of task. */
+    4096,                    /* Stack size of task */
+    NULL,                     /* parameter of the task */
+    1,                        /* priority of the task */
+    &fetch_task,                   /* Task handle to keep track of created task */
+    1); 
 
   while (1) {
     commmand_run();
     vTaskDelay(pdMS_TO_TICKS(10));
 
-    EventBits_t bits = xEventGroupGetBits(wifi_group);
-    if ((bits & BIT0) && !printer_connected) {
-            printer_connected = printer_connect();
-    }
-    
-    /* Get data from printer */
-    if (printer_connected)
-      printer_update();
-    
+    //TODO render tasks
   }
 }
