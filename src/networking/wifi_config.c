@@ -32,8 +32,6 @@ static void sta_event_handler(void *arg, esp_event_base_t event_base,
         }
 
         printf("connect to the AP fail\n");
-        // xEventGroupClearBits(wifi_event_group, WIFI_CONNECTED_BIT);
-        printf("taking semaphore\n");
         wifi_connected = false;
     }
     else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
@@ -43,7 +41,6 @@ static void sta_event_handler(void *arg, esp_event_base_t event_base,
 
         s_retry_num = 0;
         is_sta_connected = true;
-        // xEventGroupSetBits(wifi_event_group, WIFI_CONNECTED_BIT);
         wifi_connected = true;
         xSemaphoreGive(wifi_connected_sem);
     }
