@@ -1,0 +1,36 @@
+@startuml
+
+Main_APP -> Display : Display inialize
+Display -> DWIN: set up uart com config
+Display -> DWIN: Peform Handsake with display 
+DWIN --> Display: Sucess/Failure Response 
+Display -> DWIN: Set screen ROtation 
+Display -> DWIN: Update display buffer 
+Display -> DWIN: Render loading screen 
+Display -> DWIN: Draw Blank screen
+
+Main_APP -> Serial_Prompt: Intialize commands and handlers 
+Main_APP -> WIFI: Connect to AP
+WIFI -> Device_config: Check for saved ssid/password
+Device_config --> WIFI: saved data
+WIFI --> Main_APP: if no config found returns -1
+Main_APP -> Display: Show Wifi error screen
+Display -> DWIN: Render ERROR Screen
+
+Main_APP -> Printer_base: Init Printer
+Printer_base -> Device_config: get saved ip/port
+Device_config --> Printer_base: if present:true else false
+Printer_base -> Printers: Check for printer ops init
+Printers --> Printer_base: true/false
+Printer_base --> Printer_base: set intilized to true/false
+Printer_base --> Main_APP: init status true/false
+Main_APP -> Display: (false) render Printer Not Connected Screen
+
+Main_APP -> Main_APP: create binary sem for wifi notificaton
+Main_APP -> Main_APP: Create fetch_task
+
+Main_APP -> Main_APP: Intilize cmd fetch loop
+
+Fetch_Task -> FETCH_TASK: wait for wifi 
+
+@enduml
