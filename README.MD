@@ -1,5 +1,7 @@
-#DWIN_ESP32
+# DWIN_ESP32
 
+Please follow [wiki](https://github.com/MadRajib/DWIN_ESP32/wiki) for documentation.
+ 
 This is my take on building a klipper screen like solution
 using my old thrown away Ender3v2 display using ESP32.
 
