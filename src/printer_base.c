@@ -3,6 +3,7 @@
 #include "printer_base.h"
 #include "printers/printer_driver_base.h"
 #include "device_config.h"
+#include "display/dwin_lcd.h"
 
 printer_ops_t *printer_ops = NULL;
 static bool printer_initialized = false;
@@ -56,6 +57,9 @@ static void printer_update(void) {
             printf("failed to connect to printer\n");
             return;
         }
+
+        printf("connected to printer\n");
+        screen_switch(MAIN_SCREEN, ERROR_NONE);
     }
 
     printer_ops->fetch();

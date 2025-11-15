@@ -153,6 +153,19 @@
 #define DWIN_FONT_STAT font10x20
 #define DWIN_FONT_HEAD font10x20
 
+enum error_codes {
+  ERROR_WIFI_DISCONNECTED,
+  ERROR_PRINTER_NOT_CONNECTED,
+  ERROR_BLANK,
+  ERROR_NONE,
+};
+
+enum screen_win {
+  ERROR_SCREEN,
+  MAIN_SCREEN,
+  NO_SCREEN,
+};
+
 void screen_set_display_rot(uint8_t);
 void screen_update(void);
 void screen_hmi_init(void);
@@ -169,5 +182,7 @@ void screen_update_status(void);
 void screen_draw_status_frame(void);
 void screen_draw_main_frame(void);
 void screen_draw_print_icon(void);
-void screen_setup(void);
+void screen_render(void);
 void screen_init(void);
+void screen_draw_blank_frame();
+void screen_switch(enum screen_win win, enum error_codes error);

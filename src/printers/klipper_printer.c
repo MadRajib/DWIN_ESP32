@@ -56,7 +56,7 @@ void klipper_parse_json_data(char *buf, size_t len) {
     }
 
     char *str = cJSON_Print(json);
-    printf("%s\n", str);
+    // printf("%s\n", str);
 
     cJSON_Delete(json);
 }

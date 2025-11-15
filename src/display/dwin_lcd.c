@@ -12,24 +12,8 @@
 char str_buffer[20];
 char formatBuffer[20];
 
-void screen_init() {
-  dwin_init();
-  if (dwin_handshake()) 
-    printf("Connection Successfull\n");
-  else
-    printf("Connection timeout!\n");
-}
-
-void screen_setup(void) {
-    screen_set_display_rot(0);
-
-    screen_update();
-
-    screen_hmi_init();
-    screen_draw_main_frame();
-    screen_draw_status_frame();
-    screen_update_status();
-}
+static enum screen_win prev_win = NO_SCREEN;
+static enum screen_win cur_win = NO_SCREEN;
 
 /* Set display rotation */
 void screen_set_display_rot(uint8_t rot) {
@@ -240,4 +224,62 @@ void screen_draw_main_frame() {
   // screen_draw_string(false, false, DWIN_FONT_MENU, Color_White, Color_Bg_Blue, 276, 230, MSG_PREPARE);
 
   screen_update();
+}
+
+void screen_draw_main_menu()
+{
+    screen_draw_main_frame();
+    screen_draw_status_frame();
+    screen_update_status();
+}
+
+void screen_draw_blank_frame(enum error_codes code) {
+  screen_add_rect(1, Color_Bg_Orange, 0, 0, DWIN_WIDTH, 30);
+  screen_add_rect(1, Color_Bg_Black, 0, 31, DWIN_WIDTH, DWIN_HEIGHT);
+
+  if (code == ERROR_WIFI_DISCONNECTED)
+    screen_draw_string(false, false, DWIN_FONT_HEAD, Color_White, Color_Bg_Black, DWIN_HEIGHT / 2, 100, "Wifi Not Connected!");
+  else if (code == ERROR_PRINTER_NOT_CONNECTED)
+     screen_draw_string(false, false, DWIN_FONT_HEAD, Color_White, Color_Bg_Black, DWIN_HEIGHT / 2, 100, "Printer Not Connected!");
+  screen_update();
+}
+
+void screen_init() {
+  dwin_init();
+  if (!dwin_handshake()) {
+    printf("Connection timeout!\n");
+    return;
+  }
+  
+  printf("Connection Successfull\n");
+
+  screen_set_display_rot(0);
+  screen_update();
+  screen_hmi_init();
+
+  screen_switch(ERROR_SCREEN, ERROR_BLANK);
+}
+
+void screen_render(void) {
+    // screen_draw_main_frame();
+    // screen_draw_status_frame();
+    // screen_update_status();
+
+    // screen_draw_blank_frame(WIFI_DISCONNECTED);
+    // screen_draw_blank_frame(ERROR_WIFI_DISCONNECTED);
+}
+
+void screen_switch(enum screen_win win, enum error_codes error) {
+  prev_win = cur_win;
+  cur_win = win;
+
+  switch (win) {
+    case ERROR_SCREEN:
+      screen_draw_blank_frame(error);
+      break;
+    case MAIN_SCREEN:
+      screen_draw_main_menu();
+      break;
+    default:
+  }
 }

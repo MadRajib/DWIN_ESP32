@@ -32,14 +32,19 @@ void nvs_init() {
 void app_main()
 {
   nvs_init();
-  wifi_connect(0, NULL);
-  if (!printer_init()) {
-    printf("failed to initize the printer\n");
+  screen_init();
+  command_init();
+
+  if (wifi_connect(0, NULL) == -1) {
+    // show wifi no connected screen
+    screen_switch(ERROR_SCREEN, ERROR_WIFI_DISCONNECTED);
   }
 
-  screen_init();
-  screen_setup();
-  command_init();
+  if (!printer_init()) {
+    // show printer ini failure
+    printf("failed to initize the printer\n");
+    screen_switch(ERROR_SCREEN, ERROR_PRINTER_NOT_CONNECTED);
+  }
 
   wifi_connected_sem = xSemaphoreCreateBinary();
 
@@ -57,5 +62,6 @@ void app_main()
     vTaskDelay(pdMS_TO_TICKS(10));
 
     //TODO render tasks
+      // screen_render();
   }
 }
