@@ -55,6 +55,7 @@ static void printer_update(void) {
     if (printer_ops->get_printer_state() == STATE_OFFLINE) {
         if (!printer_connect()) {
             printf("failed to connect to printer\n");
+            screen_switch(ERROR_SCREEN, ERROR_PRINTER_NOT_CONNECTED);
             return;
         }
 
@@ -84,6 +85,7 @@ void priter_fetch_task(void *params) {
                     printer_update();
                     vTaskDelay(xDelay);
                 } else {
+                    screen_switch(ERROR_SCREEN, ERROR_WIFI_DISCONNECTED);
                     break;
                 }
             }
