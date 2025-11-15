@@ -48,7 +48,14 @@ Printer_base -> Display: if failed render wifi error screen
 Printer_base -> Printers: if sucess fetch printer data
 Printers -> NET: HTTP GET printer data
 NET --> Printers: JSON rsp data
-Printers -> Utils: Prase and save data to printer_info
-Printers -> Printer_base
+
+Printers -> Utils: Prase JSON data
+Utils --> Printers: Parsed data
+Printers -> Printers: Save data to printer_info struct
+Printers --> Printer_base
 Printer_base -> Display: Render Extracted data
+
+WIFI -> WIFI: Disconnected, sets wifi_connected:false
+Fetch_Task -> Display: Render Wifi Disconnected Screen
+Fetch_Task -> Fetch_Task: Waits for the wifi to connect
 @enduml
