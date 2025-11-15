@@ -62,6 +62,6 @@ void app_main()
     vTaskDelay(pdMS_TO_TICKS(10));
 
     //TODO render tasks
-      // screen_render();
+    printer_screen_render();
   }
 }

@@ -125,6 +125,10 @@ enum printer_state klipper_printer_get_state(void)
     return printer_info.printer_data.state;
 }
 
+struct _printer_data * klipper_get_printer_data(){
+    return &printer_info.printer_data;
+}
+
 printer_ops_t printer_klipper = {
     .init = klipper_printer_init,
     .fetch = klipper_printer_fetch,
@@ -132,5 +136,6 @@ printer_ops_t printer_klipper = {
     .connection_test = klipper_printer_connection_test,
     .get_printer_state = klipper_printer_get_state,
     .disconnect = klipper_printer_disconnect,
+    .get_printer_data = klipper_get_printer_data,
 };
 

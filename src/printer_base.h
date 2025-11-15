@@ -4,5 +4,6 @@
 bool printer_init(void);
 bool printer_connect(void);
 void priter_fetch_task(void *params);
+void printer_screen_render(void);
 
 #endif

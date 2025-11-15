@@ -65,6 +65,11 @@ static void printer_update(void) {
     printer_ops->fetch();
 }
 
+void printer_screen_render(void) {
+    if (!printer_ops)
+        screen_render(printer_ops->get_printer_data());
+}
+
 void priter_fetch_task(void *params) {
 
     (void)params;

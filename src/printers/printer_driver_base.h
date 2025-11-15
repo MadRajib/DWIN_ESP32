@@ -12,6 +12,7 @@ typedef struct {
     bool (*connection_test)(void);
     enum printer_state (*get_printer_state)(void);
     void (*disconnect)(void);
+    struct _printer_data * (*get_printer_data)(void); 
 } printer_ops_t;
 
 #endif

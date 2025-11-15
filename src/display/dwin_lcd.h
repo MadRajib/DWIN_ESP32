@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
+#include "printers/printer_data.h"
 
 #define DWIN_WIDTH  480 
 #define DWIN_HEIGHT 272
@@ -177,12 +178,12 @@ void screen_draw_string(bool widthAdjust, bool bShow, uint8_t size,
                       uint16_t color, uint16_t bColor, uint16_t x, uint16_t y, const char *string);
 void screen_draw_int(uint8_t bShow, bool zeroFill, uint8_t zeroMode, uint8_t size, uint16_t color,
                           uint16_t bColor, uint8_t iNum, uint16_t x, uint16_t y, uint16_t value);
-void screen_update_status(void);
+void screen_update_status(struct _printer_data *);
 
 void screen_draw_status_frame(void);
 void screen_draw_main_frame(void);
 void screen_draw_print_icon(void);
-void screen_render(void);
+void screen_render(struct _printer_data *);
 void screen_init(void);
 void screen_draw_blank_frame();
 void screen_switch(enum screen_win win, enum error_codes error);
