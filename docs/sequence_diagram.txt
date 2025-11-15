@@ -34,3 +34,6 @@ Main_APP -> Main_APP: Intilize cmd fetch loop
 Fetch_Task -> FETCH_TASK: wait for wifi 
 
 @enduml
+
+WIFI Fetch
+
