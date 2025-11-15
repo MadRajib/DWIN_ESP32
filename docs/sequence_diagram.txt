@@ -36,4 +36,19 @@ Fetch_Task -> FETCH_TASK: wait for wifi
 @enduml
 
 WIFI Fetch
+@startuml
 
+WIFI -> WIFI: Give sem when connected
+Fetch_Task -> Printer_base: printer data update
+Printer_base -> Printers: get state
+Printers --> Printer_base: return state
+Printer_base -> Printers: if OFFLINE, printer connect text
+Printers --> Printer_base: Return status 
+Printer_base -> Display: if failed render wifi error screen
+Printer_base -> Printers: if sucess fetch printer data
+Printers -> NET: HTTP GET printer data
+NET --> Printers: JSON rsp data
+Printers -> Utils: Prase and save data to printer_info
+Printers -> Printer_base
+Printer_base -> Display: Render Extracted data
+@enduml
