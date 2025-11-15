@@ -29,16 +29,9 @@ enum printer_features {
 };
 
 enum printer_temp_device {
-    TEMP_BED       = BIT(0),
-    TEMP_NOZZLE1   = BIT(1),
-    TEMP_NOZZLE2   = BIT(2),
-    TEMP_NOZZLE3   = BIT(3),
-    TEMP_NOZZLE4   = BIT(4),
-    TEMP_NOZZLE5   = BIT(5),
-    TEMP_NOZZLE6   = BIT(6),
-    TEMP_NOZZLE7   = BIT(7),
-    TEMP_NOZZLE8   = BIT(8),
-    TEMP_CHAMBER   = BIT(9),
+    TEMP_BED       = 0,
+    TEMP_NOZZLE1   = 1,
+    TEMP_CHAMBER   = 2,
 };
 
 struct _printer_data {
@@ -53,8 +46,8 @@ struct _printer_data {
         enum printer_state state;
         char* state_message;
         char* popup_message;
-        float temperatures[10];
-        float target_temperatures[10];
+        float temperatures[3];
+        float target_temperatures[3];
         float position[3];
         float elapsed_time_s;
         float printed_time_s;

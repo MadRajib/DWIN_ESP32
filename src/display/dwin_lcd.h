@@ -183,7 +183,6 @@ void screen_update_status(struct _printer_data *);
 void screen_draw_status_frame(void);
 void screen_draw_main_frame(void);
 void screen_draw_print_icon(void);
-void screen_render(struct _printer_data *);
 void screen_init(void);
 void screen_draw_blank_frame();
 void screen_switch(enum screen_win win, enum error_codes error);

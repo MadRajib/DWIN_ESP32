@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "utils/language_en.h"
 #include "dwin.h"
+#include "printer_base.h"
 
 #define SPRINTF(buffer, format_buffer, ...) ({ \
     sprintf((buffer), (format_buffer), __VA_ARGS__);                    \
@@ -169,26 +170,29 @@ void screen_update_status(void)
 
 void screen_update_status(struct _printer_data *printer_data)
 {
+  if (cur_win != MAIN_SCREEN || !printer_data)
+    return;
+  
   uint16_t col = 340;
   screen_draw_string(false, true, DWIN_FONT_STAT, Color_White, Color_Bg_Black, col + 40,
-    50 , SPRINTF(str_buffer, RANGE_FORMAT, 999, 999));
+    50 , SPRINTF(str_buffer, RANGE_FORMAT, (uint16_t)printer_data->temperatures[TEMP_NOZZLE1], (uint16_t)printer_data->target_temperatures[TEMP_NOZZLE1]));
 
   screen_draw_string(false, true, DWIN_FONT_STAT, Color_White, Color_Bg_Black, col + 40,
-    80, SPRINTF(str_buffer, RANGE_FORMAT, 0, 999));
+    80, SPRINTF(str_buffer, RANGE_FORMAT, (uint16_t)printer_data->temperatures[TEMP_BED], (uint16_t)printer_data->target_temperatures[TEMP_BED]));
 
   screen_draw_string(false, true, DWIN_FONT_STAT, Color_White, Color_Bg_Black, col + 40,
-    115, SPRINTF(str_buffer, PERCENT_FORMAT, 999));
+    115, SPRINTF(str_buffer, PERCENT_FORMAT,  (uint16_t)(printer_data->speed_mult * 100)));
 
   screen_draw_string(false, true, DWIN_FONT_STAT, Color_White, Color_Bg_Black, col + 40,
-    145, SPRINTF(str_buffer, PERCENT_FORMAT, 999));
+    145, SPRINTF(str_buffer, PERCENT_FORMAT, (uint16_t)(printer_data->fan_speed * 100)));
 
   // draw_int(true, true, 0, DWIN_FONT_STAT, Color_White, Color_Bg_Black, 3, col + 40 , 170,  999);
   // draw_int(true, true, 0, DWIN_FONT_STAT, Color_White, Color_Bg_Black, 3, col + 40,  200,  999);
   // draw_int(true, true, 0, DWIN_FONT_STAT, Color_White, Color_Bg_Black, 3, col + 40 , 230,  999);
 
-  screen_draw_int(true, true, 0, DWIN_FONT_STAT, Color_White, Color_Bg_Black, 3, col + 20 , 175,  999);
-  screen_draw_int(true, true, 0, DWIN_FONT_STAT, Color_White, Color_Bg_Black, 3, col + 90,  175,  999);
-  screen_draw_int(true, true, 0, DWIN_FONT_STAT, Color_White, Color_Bg_Black, 3, col + 20 , 205,  999);
+  screen_draw_int(true, true, 0, DWIN_FONT_STAT, Color_White, Color_Bg_Black, 3, col + 20 , 175,  (uint16_t)printer_data->position[0]);
+  screen_draw_int(true, true, 0, DWIN_FONT_STAT, Color_White, Color_Bg_Black, 3, col + 90,  175,  (uint16_t)printer_data->position[1]);
+  screen_draw_int(true, true, 0, DWIN_FONT_STAT, Color_White, Color_Bg_Black, 3, col + 20 , 205,  (uint16_t)printer_data->position[2]);
 
   screen_draw_string(false, true, DWIN_FONT_STAT, Color_White, Color_Bg_Black, col + 40,
     240, SPRINTF(str_buffer, TIME_FORMAT, 10, 12));
@@ -219,8 +223,6 @@ void screen_draw_status_frame() {
   screen_add_icon(ICON, ICON_StepZ,  icon_off, 205);
 
   screen_add_icon(ICON, ICON_PrintTime,  icon_off, 240);
-
-  screen_update();
 }
 
 void screen_draw_print_icon(void) {
@@ -253,15 +255,14 @@ void screen_draw_main_frame() {
 
   // screen_add_icon(ICON, ICON_Prepare_0, 246, 160);
   // screen_draw_string(false, false, DWIN_FONT_MENU, Color_White, Color_Bg_Blue, 276, 230, MSG_PREPARE);
-
-  screen_update();
 }
 
 void screen_draw_main_menu()
 {
     screen_draw_main_frame();
     screen_draw_status_frame();
-    // screen_update_status();
+
+    screen_update();
 }
 
 void screen_draw_blank_frame(enum error_codes code) {
@@ -291,17 +292,6 @@ void screen_init() {
   screen_switch(ERROR_SCREEN, ERROR_BLANK);
 }
 
-void screen_render(struct _printer_data *printer_data) {
-    // screen_draw_main_frame();
-    // screen_draw_status_frame();
-    // screen_update_status();
-
-    // screen_draw_blank_frame(WIFI_DISCONNECTED);
-    // screen_draw_blank_frame(ERROR_WIFI_DISCONNECTED);
-    if (cur_win == MAIN_SCREEN)
-      screen_update_status(printer_data);
-}
-
 void screen_switch(enum screen_win win, enum error_codes error) {
   prev_win = cur_win;
   cur_win = win;
@@ -312,6 +302,7 @@ void screen_switch(enum screen_win win, enum error_codes error) {
       break;
     case MAIN_SCREEN:
       screen_draw_main_menu();
+      screen_update_status(printer_get_render_data());
       break;
     default:
   }

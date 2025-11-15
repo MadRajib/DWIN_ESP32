@@ -63,11 +63,12 @@ static void printer_update(void) {
     }
 
     printer_ops->fetch();
+    screen_update_status(printer_ops->get_printer_data());
 }
 
-void printer_screen_render(void) {
-    if (!printer_ops)
-        screen_render(printer_ops->get_printer_data());
+struct _printer_data * printer_get_render_data(void)
+{
+    return printer_ops->get_printer_data();
 }
 
 void priter_fetch_task(void *params) {
