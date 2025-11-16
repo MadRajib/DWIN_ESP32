@@ -1,0 +1,15 @@
+@startuml dwin_handshake
+
+DWIN -> ESP32_UART: set up UART
+note left: dwin_init
+DWIN -> DWIN: set up Trail Bytes
+note left: Trail Bytes (TBs) -> [CC 33 C3 3C]
+group dwin_handshake
+    DWIN -> DWIN: add_byte 0x00 in send_buf
+    DWIN -> ESP32_UART: send_buf & TBs
+    note left: TBs is always sent at end.
+    ESP32_UART --> DWIN: response
+    DWIN -> DWIN: [AA '\0' 'O' 'K'] or not
+    note left: response should be OK
+end 
+@enduml
