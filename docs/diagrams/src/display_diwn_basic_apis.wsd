@@ -1,0 +1,127 @@
+@startuml display_dwin_basic_apis
+
+group void screen_set_display_rot(uint8_t rot)
+    Display -> DWIN: add_byte () for each bytes
+    note left: [0x34 0x5A 0xA5 rot] to set rotation
+    DWIN -> DWIN: append to send_buf
+    Display -> DWIN: dwin_send ()
+    DWIN -> ESP32_UART: send_buf & TBs
+end
+
+group void screen_add_icon(uint8_t libID, uint8_t picID, uint16_t x, uint16_t y)
+    Display -> DWIN: add_byte (0x23)
+    note left
+      Draw an Icon
+        libID: Icon library ID
+        picID: Icon ID
+        x/y: Upper-left point
+    end note
+    Display -> DWIN: add_word (x) & add_word (y)
+    Display -> DWIN: add_byte (0x80 | libID))
+    Display -> DWIN: add_byte (picID))
+    Display -> DWIN: dwin_send ()
+    DWIN -> ESP32_UART: send_buf & TBs
+end
+
+group screen_update
+    Display -> DWIN: DWIN_update_lcd ()
+    DWIN -> DWIN: dwin_send (0x3D)
+    DWIN -> ESP32_UART: send_buf & TBs
+end
+
+group void screen_add_rect(uint8_t mode, uint16_t color, uint16_t xStart, uint16_t yStart, uint16_t xEnd, uint16_t yEnd)
+    Display -> DWIN: add_byte (0x05)
+    note left
+          Draw a rectangle
+            mode: 0=frame, 1=fill, 2=XOR fill
+            color: Rectangle color
+            xStart/yStart: upper left point
+            xEnd/yEnd: lower right point
+    end note
+    
+    Display -> DWIN: add_byte (mode)
+    note left: mode: 0=frame, 1=fill, 2=XOR fill
+    Display -> DWIN: add_word (color)
+    note left: uint16_t color value
+    Display -> DWIN: add_word (xStart)
+    Display -> DWIN: add_word (yStart)
+    Display -> DWIN: add_word (xEnd)
+    Display -> DWIN: add_word (yEnd)
+    Display -> DWIN: dwin_send ()
+    DWIN -> ESP32_UART: send_buf & TBs
+end
+
+group screen_draw_int(uint8_t bShow, bool zeroFill, uint8_t zeroMode, uint8_t size, uint16_t color, uint16_t bColor, uint8_t iNum, uint16_t x, uint16_t y, uint16_t value)
+    Display -> DWIN: add_byte (0x14)
+    note left 
+        Draw a positive integer
+            bShow: true=display background color; false=don't display background color
+            zeroFill: true=zero fill; false=no zero fill
+            zeroMode: 1=leading 0 displayed as 0; 0=leading 0 displayed as a space
+            size: Font size
+            color: Character color
+            bColor: Background color
+            iNum: Number of digits
+            x/y: Upper-left coordinate
+            value: Integer value
+            dwin_add_byte((bShow * 0x80) | (zeroFill * 0x20) | (zeroMode * 0x10) | size);
+    end note
+    Display -> DWIN: add_byte (format_byte)
+    note left
+        Bit 7: bshow
+        Bit 6: 1 = signed; 0 = unsigned number;
+        Bit 5: zeroFill
+        Bit 4: zeroMode
+        Bit 3-0: size
+
+        format_byte: (bShow * 0x80) | (zeroFill * 0x20) | (zeroMode * 0x10) | size
+    end note       
+    
+    Display -> DWIN: add_byte (mode)
+    Display -> DWIN: add_word (color)
+    Display -> DWIN: add_word (bColor)
+    Display -> DWIN: add_byte (iNum)
+    Display -> DWIN: add_byte (0)
+
+    Display -> DWIN: add_word (x)
+    Display -> DWIN: add_word (y)
+
+    Display -> DWIN: dwin_write_big_endian_int64 (value)
+    Display -> DWIN: dwin_send ()
+    DWIN -> ESP32_UART: send_buf & TBs
+end
+
+group void screen_draw_string(bool widthAdjust, bool bShow, uint8_t size, uint16_t color, uint16_t bColor, uint16_t x, uint16_t y, const char *string)
+    Display -> DWIN: add_byte (0x11)
+    note left 
+      Draw a string
+        widthAdjust: true=self-adjust character width; false=no adjustment
+        bShow: true=display background color; false=don't display background color
+        size: Font size
+        color: Character color
+        bColor: Background color
+        x/y: Upper-left coordinate of the string
+        *string: The string
+    end note
+    Display -> DWIN: add_byte (format_byte)
+    note left
+        Bit 7: widthAdjust
+        Bit 6: bShow
+        Bit 5-4: Unused (0)
+        Bit 3-0: size
+
+        format_byte: (widthAdjust * 0x80) | (bShow * 0x40) | size
+    end note       
+    
+    Display -> DWIN: add_word (color)
+    Display -> DWIN: add_word (bColor)
+
+    Display -> DWIN: add_word (x)
+    Display -> DWIN: add_word (y)
+
+    Display -> DWIN: add_string(string)
+    Display -> DWIN: dwin_send ()
+    DWIN -> ESP32_UART: send_buf & TBs
+end
+ 
+@enduml
