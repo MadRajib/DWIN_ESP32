@@ -8,19 +8,9 @@
 #include "rom/ets_sys.h"
 #include "utils.h"
 #include "dwin.h"
+#include "dwin_pins.h"
 
-/* DISPLAY size */
-#define DWIN_WIDTH  480 
-#define DWIN_HEIGHT 272
-
-/* UART CONFIG */
-#define UART_NUM UART_NUM_2
-#define TX_PIN GPIO_NUM_17
-#define RX_PIN GPIO_NUM_16
-#define UART_BAUDRATE 115200
-#define UART_READ_TIMEOUT_MS 1000
-
-static const char* TAG = "DWIN";
+// static const char* TAG = "DWIN";
 
 uint8_t sendbuf[11 + DWIN_WIDTH / 6 * 2] = { 0xAA };
 uint8_t tailbuf[4] = { 0xCC, 0x33, 0xC3, 0x3C };
@@ -45,19 +35,19 @@ void DWIN_Send(size_t *i)
 
     /* Send send buffer to uart */
     FOR_L_N(_i, *i) {
-        uart_write_bytes(UART_NUM, (const char *)&sendbuf[_i], 1);
+        uart_write_bytes(DWIN_UART_NUM, (const char *)&sendbuf[_i], 1);
         ets_delay_us(1);
         // ESP_LOGW(TAG, "0x%02x ", sendbuf[_i]);
     }
     
     /* Send trailing buffer to uart, always after sending send buffer */
     FOR_L_N(_i, 4) {
-        uart_write_bytes(UART_NUM, (const char *)&tailbuf[_i], 1);
+        uart_write_bytes(DWIN_UART_NUM, (const char *)&tailbuf[_i], 1);
         ets_delay_us(1);
         // ESP_LOGW(TAG, "0x%02x ", tailbuf[_i]);
     }
 
-    ESP_ERROR_CHECK(uart_wait_tx_done(UART_NUM, 500));
+    ESP_ERROR_CHECK(uart_wait_tx_done(DWIN_UART_NUM, 500));
 
     /* wait for response */
     vTaskDelay(10 / portTICK_PERIOD_MS);
@@ -73,12 +63,12 @@ bool DWIN_Handshake(void)
 
     while (1) {
         buffered_len = 0;
-        uart_get_buffered_data_len(UART_NUM, &buffered_len);
+        uart_get_buffered_data_len(DWIN_UART_NUM, &buffered_len);
 
         if (buffered_len > 0 && recnum < (signed)sizeof(recvbuf)) {
 
             // Read data from UART
-            int len = uart_read_bytes(UART_NUM, &recvbuf[recnum], 1, UART_READ_TIMEOUT_MS / portTICK_PERIOD_MS);
+            int len = uart_read_bytes(DWIN_UART_NUM, &recvbuf[recnum], 1, DIWN_UART_READ_TIMEOUT_MS / portTICK_PERIOD_MS);
             
             if (len > 0) {
                 // Check for valid data
@@ -107,7 +97,7 @@ bool DWIN_Handshake(void)
 int DWIN_init(void)
 {
     uart_config_t uart_config = {
-        .baud_rate = UART_BAUDRATE,
+        .baud_rate = DWIN_BAUD_RATE,
         .data_bits = UART_DATA_8_BITS,
         .parity = UART_PARITY_DISABLE,
         .stop_bits = UART_STOP_BITS_1,
@@ -115,11 +105,11 @@ int DWIN_init(void)
     };
 
     // Configure UART parameters
-    ESP_ERROR_CHECK(uart_param_config(UART_NUM, &uart_config));
+    ESP_ERROR_CHECK(uart_param_config(DWIN_UART_NUM, &uart_config));
     // Set UART pins
-    ESP_ERROR_CHECK(uart_set_pin(UART_NUM, TX_PIN, RX_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
+    ESP_ERROR_CHECK(uart_set_pin(DWIN_UART_NUM, DWIN_UART_TX, DWIN_UART_RX, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
     // Install UART driver
-    ESP_ERROR_CHECK(uart_driver_install(UART_NUM, 1024, 0, 0, NULL, 0));
+    ESP_ERROR_CHECK(uart_driver_install(DWIN_UART_NUM, 1024, 0, 0, NULL, 0));
 
     return 0;
 }
