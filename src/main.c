@@ -10,7 +10,7 @@ void app_main()
 {
     DWIN_init();
 
-    if (DWIN_Handshake()) { 
+    if (DWIN_handshake()) { 
         ESP_LOGW(TAG, "Connection Successfull\n");
     }
     else {

@@ -7,10 +7,10 @@
 
 int DWIN_init(void);
 
-bool DWIN_Handshake(void);
+bool DWIN_handshake(void);
 
-void DWIN_Send(void);
+void DWIN_send(void);
 
-void DWIN_Byte(const uint8_t bval);
+void DWIN_add_byte(const uint8_t bval);
 
 #endif

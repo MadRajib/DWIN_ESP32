@@ -21,12 +21,12 @@ static size_t sbuf_indx = SEND_BUF_START_INDEX;
 
 int recnum = 0;
 
-void DWIN_Byte(const uint8_t bval)
+void DWIN_add_byte(const uint8_t bval)
 {
     sendbuf[sbuf_indx++] = bval;
 }
 
-void DWIN_Send(void)
+void DWIN_send(void)
 {
     /* Send send buffer to uart */
     FOR_L_N(_i, sbuf_indx) {
@@ -50,10 +50,10 @@ void DWIN_Send(void)
     sbuf_indx = SEND_BUF_START_INDEX;
 }
 
-bool DWIN_Handshake(void)
+bool DWIN_handshake(void)
 {
-    DWIN_Byte(0x00);
-    DWIN_Send();
+    DWIN_add_byte(0x00);
+    DWIN_send();
     
     size_t buffered_len = 0;
 
