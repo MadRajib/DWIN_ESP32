@@ -12,15 +12,15 @@
 
 // Encoder pins
 #ifndef DWIN_ENCODER_CLK
-#define DWIN_ENCODER_CLK    35
+#define DWIN_ENCODER_CLK    25
 #endif
 
 #ifndef DWIN_ENCODER_DT
-#define DWIN_ENCODER_DT     34
+#define DWIN_ENCODER_DT     26
 #endif
 
 #ifndef DWIN_ENCODER_BTN
-#define DWIN_ENCODER_BTN    32
+#define DWIN_ENCODER_BTN    27
 #endif
 
 // UART configuration
