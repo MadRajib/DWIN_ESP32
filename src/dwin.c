@@ -10,31 +10,26 @@
 #include "dwin.h"
 #include "dwin_pins.h"
 
+#define SEND_BUF_START_INDEX 1
 // static const char* TAG = "DWIN";
 
 uint8_t sendbuf[11 + DWIN_WIDTH / 6 * 2] = { 0xAA };
 uint8_t tailbuf[4] = { 0xCC, 0x33, 0xC3, 0x3C };
 uint8_t recvbuf[26] = { 0 };
 uint8_t receivedType;
+static size_t sbuf_indx = SEND_BUF_START_INDEX;
 
 int recnum = 0;
 
-void DWIN_Byte(size_t *i, const uint16_t bval)
+void DWIN_Byte(const uint8_t bval)
 {
-  /* 0xAA is already present in send buffer */
-  ++(*i);
-  sendbuf[*i] = bval;
+    sendbuf[sbuf_indx++] = bval;
 }
 
-void DWIN_Send(size_t *i)
+void DWIN_Send(void)
 {
-    /* Size of send buffer is byte added + 1
-    * since start byte is always 0xAA
-    */
-    ++(*i);
-
     /* Send send buffer to uart */
-    FOR_L_N(_i, *i) {
+    FOR_L_N(_i, sbuf_indx) {
         uart_write_bytes(DWIN_UART_NUM, (const char *)&sendbuf[_i], 1);
         ets_delay_us(1);
         // ESP_LOGW(TAG, "0x%02x ", sendbuf[_i]);
@@ -51,13 +46,14 @@ void DWIN_Send(size_t *i)
 
     /* wait for response */
     vTaskDelay(10 / portTICK_PERIOD_MS);
+
+    sbuf_indx = SEND_BUF_START_INDEX;
 }
 
 bool DWIN_Handshake(void)
 {
-    size_t i = 0;
-    DWIN_Byte(&i, 0x00);
-    DWIN_Send(&i);
+    DWIN_Byte(0x00);
+    DWIN_Send();
     
     size_t buffered_len = 0;
 

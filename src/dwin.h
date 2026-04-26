@@ -9,8 +9,8 @@ int DWIN_init(void);
 
 bool DWIN_Handshake(void);
 
-void DWIN_Send(size_t *i);
+void DWIN_Send(void);
 
-void DWIN_Byte(size_t *i, const uint16_t bval);
+void DWIN_Byte(const uint8_t bval);
 
 #endif
